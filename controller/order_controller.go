@@ -11,7 +11,8 @@ import (
 
 // OrderController : represent the order's controller contract
 type OrderController interface {
-	AddOrder(*gin.Context)
+	Order(*gin.Context)
+	Orders(c *gin.Context)
 }
 
 type orderController struct {
@@ -25,17 +26,28 @@ func NewOrderController(s service.OrderService) OrderController {
 	}
 }
 
-func (u orderController) AddOrder(c *gin.Context) {
-	log.Print("[OrderController]...add TableOrder")
-	var order model.CreateOrder
+func (u orderController) Order(c *gin.Context) {
+	log.Print("[OrderController]...add TOrder")
+	var order model.OrderRequest
 	if err := c.ShouldBindJSON(&order); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	res, err := u.orderService.CreateOrder(c, order)
+	res, err := u.orderService.Order(c, order)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Error while saving order"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": res})
+}
+func (u orderController) Orders(c *gin.Context) {
+	log.Print("[OrderController]...add TOrder")
+
+	res, err := u.orderService.Orders()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Error get orders"})
 		return
 	}
 

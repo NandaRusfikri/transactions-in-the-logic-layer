@@ -21,15 +21,13 @@ func SetupRoutes(db *gorm.DB) {
 	if err := orderRepository.Migrate(); err != nil {
 		log.Fatal("Order migrate err", err)
 	}
-	orderService := service.NewOrderService(orderRepository, db, uw)
-
+	orderService := service.NewOrderService(orderRepository, uw)
 	orderController := controller.NewOrderController(orderService)
 
-	orders := httpRouter.Group("order")
+	v1 := httpRouter.Group("v1")
+	v1.POST("order", orderController.Order)
+	v1.GET("orders", orderController.Orders)
 
-	orders.POST("/", orderController.AddOrder)
-
-	//httpRouter.POST("/money-transfer", middleware.DBTransactionMiddleware(db), orderController.TransferMoney)
-	httpRouter.Run()
+	httpRouter.Run(":9999")
 
 }

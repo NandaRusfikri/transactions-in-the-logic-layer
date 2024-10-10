@@ -14,14 +14,14 @@ import (
 	"testing"
 )
 
-func mockUnitOfWork(mockUW *transaction.MockUoW, order model.TableOrder, err error) {
+func mockUnitOfWork(mockUW *transaction.MockUoW, order model.TOrder, err error) {
 	mockUW.On("WithTx", mock.Anything, mock.AnythingOfType("func(context.Context) (interface{}, error)")).
 		Return(order, err).Once()
 }
-func createInput() model.CreateOrder {
-	return model.CreateOrder{
+func createInput() model.OrderRequest {
+	return model.OrderRequest{
 		CustomerId: 11,
-		Items: []model.CreateOrderItem{
+		Items: []model.OrderItemRequest{
 			{
 				Quantity:  1,
 				ProductId: 1,
@@ -45,48 +45,48 @@ func TestAddOrder(t *testing.T) {
 	}), &gorm.Config{})
 
 	uW := transaction.NewUW(gormDB)
-	service := NewOrderService(mockRepo, gormDB, uW)
+	service := NewOrderService(mockRepo, uW)
 
 	var errorDB = errors.New("error db")
 
 	inputUsecase := createInput()
-	order := model.TableOrder{
+	order := model.TOrder{
 		CustomerId: 11,
 	}
 
 	tests := []struct {
 		name           string
-		input          model.CreateOrder
+		input          model.OrderRequest
 		mock           func()
 		expectedErr    error
-		expectedResult model.TableOrder
+		expectedResult model.TOrder
 	}{
 		{
 			name:  "1.success new order",
 			input: inputUsecase,
 			mock: func() {
-				orderRes := model.TableOrder{ID: 5}
+				orderRes := model.TOrder{Id: 5}
 				mockRepo.On("AddOrder", mock.Anything, order).Return(orderRes, nil).Once()
 				for _, item := range inputUsecase.Items {
-					mockRepo.On("AddOrderItem", mock.Anything, model.TableOrderItem{
-						OrderId:   orderRes.ID,
+					mockRepo.On("AddOrderItem", mock.Anything, model.TOrderItem{
+						OrderId:   orderRes.Id,
 						ProductId: item.ProductId,
 						Quantity:  item.Quantity,
 						Note:      item.Note,
-					}).Return(model.TableOrderItem{}, nil).Once()
-					mockRepo.On("UpdateStock", mock.Anything, item.ProductId, item.Quantity).Return(model.TableProduct{}, nil).Once()
+					}).Return(model.TOrderItem{}, nil).Once()
+					mockRepo.On("UpdateStock", mock.Anything, item.ProductId, item.Quantity).Return(model.TProduct{}, nil).Once()
 				}
-				mockUnitOfWork(mockUW, model.TableOrder{ID: 5}, nil)
+				mockUnitOfWork(mockUW, model.TOrder{Id: 5}, nil)
 			},
 			expectedErr:    nil,
-			expectedResult: model.TableOrder{ID: 5},
+			expectedResult: model.TOrder{Id: 5},
 		},
 		{
-			name:  "2.failed call method AddOrder",
+			name:  "2.failed call method Order",
 			input: inputUsecase,
 			mock: func() {
-				mockRepo.On("AddOrder", mock.Anything, order).Return(model.TableOrder{}, errorDB).Once()
-				mockUnitOfWork(mockUW, model.TableOrder{}, errorDB)
+				mockRepo.On("AddOrder", mock.Anything, order).Return(model.TOrder{}, errorDB).Once()
+				mockUnitOfWork(mockUW, model.TOrder{}, errorDB)
 			},
 			expectedErr: errorDB,
 		},
@@ -94,16 +94,16 @@ func TestAddOrder(t *testing.T) {
 			name:  "3.failed call method AddOrderItem",
 			input: inputUsecase,
 			mock: func() {
-				mockRepo.On("AddOrder", mock.Anything, order).Return(model.TableOrder{}, nil).Once()
+				mockRepo.On("AddOrder", mock.Anything, order).Return(model.TOrder{}, nil).Once()
 				for _, item := range inputUsecase.Items {
-					mockRepo.On("AddOrderItem", mock.Anything, model.TableOrderItem{
-						OrderId:   order.ID,
+					mockRepo.On("AddOrderItem", mock.Anything, model.TOrderItem{
+						OrderId:   order.Id,
 						ProductId: item.ProductId,
 						Quantity:  item.Quantity,
 						Note:      item.Note,
-					}).Return(model.TableOrderItem{}, errorDB).Once()
+					}).Return(model.TOrderItem{}, errorDB).Once()
 				}
-				mockUnitOfWork(mockUW, model.TableOrder{}, errorDB)
+				mockUnitOfWork(mockUW, model.TOrder{}, errorDB)
 			},
 			expectedErr: errorDB,
 		},
@@ -111,17 +111,17 @@ func TestAddOrder(t *testing.T) {
 			name:  "4.failed call method UpdateStock",
 			input: inputUsecase,
 			mock: func() {
-				mockRepo.On("AddOrder", mock.Anything, order).Return(model.TableOrder{}, nil).Once()
+				mockRepo.On("AddOrder", mock.Anything, order).Return(model.TOrder{}, nil).Once()
 				for _, item := range inputUsecase.Items {
-					mockRepo.On("AddOrderItem", mock.Anything, model.TableOrderItem{
-						OrderId:   order.ID,
+					mockRepo.On("AddOrderItem", mock.Anything, model.TOrderItem{
+						OrderId:   order.Id,
 						ProductId: item.ProductId,
 						Quantity:  item.Quantity,
 						Note:      item.Note,
-					}).Return(model.TableOrderItem{}, nil).Once()
-					mockRepo.On("UpdateStock", mock.Anything, item.ProductId, item.Quantity).Return(model.TableProduct{}, errorDB).Once()
+					}).Return(model.TOrderItem{}, nil).Once()
+					mockRepo.On("UpdateStock", mock.Anything, item.ProductId, item.Quantity).Return(model.TProduct{}, errorDB).Once()
 				}
-				mockUnitOfWork(mockUW, model.TableOrder{}, errorDB)
+				mockUnitOfWork(mockUW, model.TOrder{}, errorDB)
 			},
 			expectedErr: errorDB,
 		},
@@ -130,7 +130,7 @@ func TestAddOrder(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			test.mock()
-			result, err := service.CreateOrder(context.TODO(), inputUsecase)
+			result, err := service.Order(context.TODO(), inputUsecase)
 			assert.Equal(t, test.expectedResult, result)
 			assert.Equal(t, test.expectedErr, err)
 		})

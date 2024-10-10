@@ -18,25 +18,25 @@ type MockOrderRepository struct {
 }
 
 // AddOrder provides a mock function with given fields: ctx, data
-func (_m *MockOrderRepository) AddOrder(ctx context.Context, data model.TableOrder) (model.TableOrder, error) {
+func (_m *MockOrderRepository) AddOrder(ctx context.Context, data model.TOrder) (model.TOrder, error) {
 	ret := _m.Called(ctx, data)
 
 	if len(ret) == 0 {
-		panic("no return value specified for AddOrder")
+		panic("no return value specified for Order")
 	}
 
-	var r0 model.TableOrder
+	var r0 model.TOrder
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, model.TableOrder) (model.TableOrder, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, model.TOrder) (model.TOrder, error)); ok {
 		return rf(ctx, data)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, model.TableOrder) model.TableOrder); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, model.TOrder) model.TOrder); ok {
 		r0 = rf(ctx, data)
 	} else {
-		r0 = ret.Get(0).(model.TableOrder)
+		r0 = ret.Get(0).(model.TOrder)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, model.TableOrder) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, model.TOrder) error); ok {
 		r1 = rf(ctx, data)
 	} else {
 		r1 = ret.Error(1)
@@ -46,25 +46,25 @@ func (_m *MockOrderRepository) AddOrder(ctx context.Context, data model.TableOrd
 }
 
 // AddOrderItem provides a mock function with given fields: ctx, item
-func (_m *MockOrderRepository) AddOrderItem(ctx context.Context, item model.TableOrderItem) (model.TableOrderItem, error) {
+func (_m *MockOrderRepository) AddOrderItem(ctx context.Context, item model.TOrderItem) (model.TOrderItem, error) {
 	ret := _m.Called(ctx, item)
 
 	if len(ret) == 0 {
 		panic("no return value specified for AddOrderItem")
 	}
 
-	var r0 model.TableOrderItem
+	var r0 model.TOrderItem
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, model.TableOrderItem) (model.TableOrderItem, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, model.TOrderItem) (model.TOrderItem, error)); ok {
 		return rf(ctx, item)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, model.TableOrderItem) model.TableOrderItem); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, model.TOrderItem) model.TOrderItem); ok {
 		r0 = rf(ctx, item)
 	} else {
-		r0 = ret.Get(0).(model.TableOrderItem)
+		r0 = ret.Get(0).(model.TOrderItem)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, model.TableOrderItem) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, model.TOrderItem) error); ok {
 		r1 = rf(ctx, item)
 	} else {
 		r1 = ret.Error(1)
@@ -74,23 +74,23 @@ func (_m *MockOrderRepository) AddOrderItem(ctx context.Context, item model.Tabl
 }
 
 // GetAll provides a mock function with given fields:
-func (_m *MockOrderRepository) GetAll() ([]model.TableOrder, error) {
+func (_m *MockOrderRepository) GetAll() ([]model.TOrder, error) {
 	ret := _m.Called()
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetAll")
 	}
 
-	var r0 []model.TableOrder
+	var r0 []model.TOrder
 	var r1 error
-	if rf, ok := ret.Get(0).(func() ([]model.TableOrder, error)); ok {
+	if rf, ok := ret.Get(0).(func() ([]model.TOrder, error)); ok {
 		return rf()
 	}
-	if rf, ok := ret.Get(0).(func() []model.TableOrder); ok {
+	if rf, ok := ret.Get(0).(func() []model.TOrder); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]model.TableOrder)
+			r0 = ret.Get(0).([]model.TOrder)
 		}
 	}
 
@@ -122,22 +122,22 @@ func (_m *MockOrderRepository) Migrate() error {
 }
 
 // UpdateStock provides a mock function with given fields: ctx, productId, quantity
-func (_m *MockOrderRepository) UpdateStock(ctx context.Context, productId uint, quantity uint) (model.TableProduct, error) {
+func (_m *MockOrderRepository) UpdateStock(ctx context.Context, productId uint, quantity uint) (model.TProduct, error) {
 	ret := _m.Called(ctx, productId, quantity)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UpdateStock")
 	}
 
-	var r0 model.TableProduct
+	var r0 model.TProduct
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, uint, uint) (model.TableProduct, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, uint, uint) (model.TProduct, error)); ok {
 		return rf(ctx, productId, quantity)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, uint, uint) model.TableProduct); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, uint, uint) model.TProduct); ok {
 		r0 = rf(ctx, productId, quantity)
 	} else {
-		r0 = ret.Get(0).(model.TableProduct)
+		r0 = ret.Get(0).(model.TProduct)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, uint, uint) error); ok {
