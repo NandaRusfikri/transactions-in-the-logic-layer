@@ -17,9 +17,8 @@ type orderRepository struct {
 type OrderRepository interface {
 	AddOrder(ctx context.Context, data model.TOrder) (model.TOrder, error)
 	AddOrderItem(ctx context.Context, item model.TOrderItem) (model.TOrderItem, error)
-	UpdateStock(ctx context.Context, productId, quantity uint) (model.TProduct, error)
+	UpdateStock(ctx context.Context, productId uint64, quantity uint) (model.TProduct, error)
 	GetAll() ([]model.TOrder, error)
-	Migrate() error
 }
 
 // NewOrderRepository -> returns new user repository
@@ -27,34 +26,6 @@ func NewOrderRepository(db *gorm.DB) OrderRepository {
 	return orderRepository{
 		DB: db,
 	}
-}
-
-func (u orderRepository) Migrate() error {
-	log.Print("[OrderRepository]...Migrate")
-	u.DB.AutoMigrate(&model.TProduct{})
-
-	products := []model.TProduct{
-		{
-			Id:       1,
-			Name:     "Pecel Lele",
-			Quantity: 100,
-		},
-		{
-			Id:       2,
-			Name:     "Baso Sapi",
-			Quantity: 100,
-		},
-		{
-			Id:       3,
-			Name:     "Batagor",
-			Quantity: 100,
-		},
-	}
-
-	u.DB.Create(&products)
-
-	u.DB.AutoMigrate(&model.TOrder{})
-	return u.DB.AutoMigrate(&model.TOrderItem{})
 }
 
 func (u orderRepository) AddOrder(ctx context.Context, data model.TOrder) (model.TOrder, error) {
@@ -67,7 +38,7 @@ func (u orderRepository) AddOrder(ctx context.Context, data model.TOrder) (model
 	err := tx.Create(&data).Error
 	return data, err
 }
-func (u orderRepository) UpdateStock(ctx context.Context, productId, quantity uint) (model.TProduct, error) {
+func (u orderRepository) UpdateStock(ctx context.Context, productId uint64, quantity uint) (model.TProduct, error) {
 	log.Print("[OrderRepository]...UpdateStock")
 
 	tx, ok := transaction.GetTx(ctx)

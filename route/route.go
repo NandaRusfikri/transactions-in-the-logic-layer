@@ -15,13 +15,15 @@ import (
 func SetupRoutes(db *gorm.DB) {
 	httpRouter := gin.Default()
 
-	orderRepository := repository.NewOrderRepository(db)
-	uw := transaction.NewUW(db)
-
-	if err := orderRepository.Migrate(); err != nil {
+	if err := repository.Migrate(db); err != nil {
 		log.Fatal("Order migrate err", err)
 	}
-	orderService := service.NewOrderService(orderRepository, uw)
+
+	orderRepository := repository.NewOrderRepository(db)
+	productRepository := repository.NewProductRepository(db)
+	uw := transaction.NewUW(db)
+
+	orderService := service.NewOrderService(orderRepository, productRepository, uw)
 	orderController := controller.NewOrderController(orderService)
 
 	v1 := httpRouter.Group("v1")

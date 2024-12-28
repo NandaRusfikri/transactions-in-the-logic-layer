@@ -14,14 +14,16 @@ type OrderService interface {
 }
 
 type orderService struct {
-	orderRepository repository.OrderRepository
-	UW              transaction.UoW
+	orderRepository   repository.OrderRepository
+	productRepository repository.ProductRepository
+	UW                transaction.UoW
 }
 
-func NewOrderService(r repository.OrderRepository, uw transaction.UoW) OrderService {
+func NewOrderService(order repository.OrderRepository, product repository.ProductRepository, uw transaction.UoW) OrderService {
 	return orderService{
-		orderRepository: r,
-		UW:              uw,
+		orderRepository:   order,
+		productRepository: product,
+		UW:                uw,
 	}
 }
 
@@ -35,11 +37,18 @@ func (u orderService) Order(ctx2 context.Context, param model.OrderRequest) (mod
 		}
 
 		for _, item := range param.Items {
+			product, err := u.productRepository.GetProduct(ctx, model.TProduct{Id: item.ProductId})
+			if err != nil {
+				return nil, err
+			}
+
 			_, err = u.orderRepository.AddOrderItem(ctx, model.TOrderItem{
-				OrderId:   dataOrder.Id,
-				Quantity:  item.Quantity,
-				ProductId: item.ProductId,
-				Note:      item.Note,
+				OrderId:      dataOrder.Id,
+				ProductId:    product.Id,
+				ProductName:  product.Name,
+				ProductPrice: product.Price,
+				Quantity:     item.Quantity,
+				Note:         item.Note,
 			})
 			if err != nil {
 				return model.TOrder{}, err
