@@ -3,7 +3,6 @@ package controller
 import (
 	"go-transaction/model"
 	"go-transaction/service"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -27,7 +26,6 @@ func NewOrderController(s service.OrderService) OrderController {
 }
 
 func (u orderController) Order(c *gin.Context) {
-	log.Print("[OrderController]...add TOrder")
 	var order model.OrderRequest
 	if err := c.ShouldBindJSON(&order); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -43,7 +41,6 @@ func (u orderController) Order(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": res})
 }
 func (u orderController) Orders(c *gin.Context) {
-	log.Print("[OrderController]...add TOrder")
 
 	res, err := u.orderService.Orders()
 	if err != nil {

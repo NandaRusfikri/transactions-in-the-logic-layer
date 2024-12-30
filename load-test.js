@@ -3,8 +3,8 @@ import { check, sleep } from 'k6';
 
 
 export let options = {
-    vus: 1, // Number of virtual users (VUs)
-    duration: '1s', // Duration of the test
+    vus: 400, // Number of virtual users (VUs)
+    duration: '180s', // Duration of the test
   };
 
 // URL base API
@@ -18,16 +18,17 @@ export function NewOrder() {
 
 
     const payload = JSON.stringify({
-        customer_id: Math.floor(Math.random() * 500) + 10,
+        customer_id: Math.floor(Math.random() * 800) + 10,
+        idempotency_key: (Math.random() + 1).toString(36).substring(2, 2 + 20),
         items: [
             {
                 product_id: Math.floor(Math.random() * 500) + 10,
-                quantity: Math.floor(Math.random() * 20) + 1,
+                quantity: Math.floor(Math.random() * 2) + 1,
                 note: "string note",
             },
             {
-                product_id: Math.floor(Math.random() * 500) + 10,
-                quantity: Math.floor(Math.random() * 20) + 1,
+                product_id: Math.floor(Math.random() * (999 - 501 + 1)) + 501,
+                quantity: Math.floor(Math.random() * 3) + 1,
                 note: "string note",
             }
         ]

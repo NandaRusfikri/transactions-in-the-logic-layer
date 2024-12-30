@@ -15,10 +15,11 @@ type (
 		City      string    `gorm:"column:city" json:"city"`
 	}
 	TOrder struct {
-		Id         uint64       `gorm:"primarykey" json:"id"`
-		CreatedAt  time.Time    `json:"created_at"`
-		CustomerId uint64       `gorm:"column:customer_id" json:"customer_id"`
-		Items      []TOrderItem `gorm:"foreignKey:OrderId;references:Id"`
+		Id          uint64       `gorm:"primarykey" json:"id"`
+		CreatedAt   time.Time    `json:"created_at"`
+		CustomerId  uint64       `gorm:"column:customer_id" json:"customer_id"`
+		OrderNumber string       `gorm:"column:order_number;unique" json:"order_number"`
+		Items       []TOrderItem `gorm:"foreignKey:OrderId;references:Id"`
 	}
 	TOrderItem struct {
 		Id           uint64    `gorm:"primarykey" json:"id"`
@@ -33,7 +34,7 @@ type (
 	TProduct struct {
 		Id       uint64 `gorm:"column:id;primary_key"`
 		Name     string `gorm:"column:name"`
-		Quantity int    `gorm:"column:quantity"`
+		Quantity uint   `gorm:"column:quantity"`
 		Price    uint   `gorm:"column:price"`
 	}
 )

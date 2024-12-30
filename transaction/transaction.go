@@ -3,14 +3,13 @@ package transaction
 import (
 	"context"
 	"database/sql"
-	"log"
-
 	"gorm.io/gorm"
 )
 
 type contextKey string
 
 const TxKey contextKey = "db_tx"
+const CtxLocking contextKey = "locking"
 
 type UoW struct {
 	db *gorm.DB
@@ -20,6 +19,7 @@ func NewUW(db *gorm.DB) UoW {
 	return UoW{db}
 }
 
+// WithTx wrapper function for handle database transaction
 func (uw *UoW) WithTx(ctx context.Context, fn func(ctx context.Context) (interface{}, error)) (interface{}, error) {
 	// begin a transaction
 	tx := uw.db.Begin(&sql.TxOptions{})
@@ -35,7 +35,6 @@ func (uw *UoW) WithTx(ctx context.Context, fn func(ctx context.Context) (interfa
 
 	v, err := fn(ctx)
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
@@ -45,7 +44,14 @@ func (uw *UoW) WithTx(ctx context.Context, fn func(ctx context.Context) (interfa
 	return v, nil
 }
 
+// GetTx get database transaction from context
 func GetTx(ctx context.Context) (tx *gorm.DB, ok bool) {
 	tx, ok = ctx.Value(TxKey).(*gorm.DB)
+	return
+}
+
+// GetLocking get row locking
+func GetLocking(ctx context.Context) (strength string, ok bool) {
+	strength, ok = ctx.Value(CtxLocking).(string)
 	return
 }
